@@ -1,0 +1,10 @@
+# Build results
+
+[Ll]og/
+.vscode/
+.data/
+data/
+
+*.pyc
+*pkl
+*.pt
