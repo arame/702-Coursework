@@ -4,4 +4,7 @@ class Activation:
     def sigmoid(self, x):
         return 1 / (1 + np.e ** -x)
     
-    activation_function = sigmoid
+    def reLU(self, x):
+        return np.maximum(0.0, x)
+
+    activation_function = reLU
