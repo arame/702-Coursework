@@ -18,8 +18,8 @@ class NeuralNetwork:
         self.no_of_hidden_nodes = no_of_hidden_nodes
         self.learning_rate = learning_rate 
         self.create_weight_matrices()
-        self.a = Activation()
-        self.d = Derivative()
+
+# Code for training  
 
     def truncated_normal(self, mean=0, sd=1, low=0, upp=10):
         return truncnorm((low - mean) / sd, 
@@ -37,12 +37,10 @@ class NeuralNetwork:
                              sd=1, 
                              low=-rad, 
                              upp=rad)
-        self.wih = X.rvs((self.no_of_hidden_nodes, 
-                                       self.no_of_in_nodes))
+        self.weights_in_hidden = X.rvs((self.no_of_hidden_nodes, self.no_of_in_nodes))
         rad = 1 / np.sqrt(self.no_of_hidden_nodes)
         X = self.truncated_normal(mean=0, sd=1, low=-rad, upp=rad)
-        self.who = X.rvs((self.no_of_out_nodes, 
-                                         self.no_of_hidden_nodes))
+        self.weights_hidden_output = X.rvs((self.no_of_out_nodes, self.no_of_hidden_nodes))
         
     def train_single(self, input_vector, target_vector):
         """
@@ -53,29 +51,24 @@ class NeuralNetwork:
         input_vector = np.array(input_vector, ndmin=2).T
         target_vector = np.array(target_vector, ndmin=2).T
         
-        output_vector1 = np.dot(self.wih, 
-                                input_vector)
-        output_hidden = self.a.activation_function(output_vector1)
+        output_vector1 = np.dot(self.weights_in_hidden, input_vector)
+        output_hidden = Activation.reLU(output_vector1)
         
-        output_vector2 = np.dot(self.who, 
-                                output_hidden)
-        output_network = self.a.activation_function(output_vector2)
+        output_vector2 = np.dot(self.weights_hidden_output, output_hidden)
+        output_network = Activation.sigmoid(output_vector2)
         
         output_errors = target_vector - output_network
         # update the weights:
-        tmp = output_errors * output_network * \
-              (1.0 - output_network)     
-        tmp = self.learning_rate  * np.dot(tmp, 
-                                           output_hidden.T)
-        self.who += tmp
+        tmp = output_errors * Derivative.sigmoid(output_network)     
+        tmp = self.learning_rate  * np.dot(tmp, output_hidden.T)
+        self.weights_hidden_output += tmp
         # calculate hidden errors:
-        hidden_errors = np.dot(self.who.T, 
-                               output_errors)
+        hidden_errors = np.dot(self.weights_hidden_output.T, output_errors)
         # ----------------------------------------------------------------------
         # update the weights:
-        tmp = hidden_errors * self.d.derivative_function(output_hidden)
+        tmp = hidden_errors * Derivative.reLU(output_hidden)
         # -----------------------------------------------------------------------
-        self.wih += self.learning_rate * np.dot(tmp, input_vector.T)
+        self.weights_in_hidden += self.learning_rate * np.dot(tmp, input_vector.T)
         
     def train(self, data_array, 
               labels_one_hot_array,
@@ -85,23 +78,23 @@ class NeuralNetwork:
         for _ in range(epochs):  
             print("*", end="")
             for i in range(len(data_array)):
-                self.train_single(data_array[i], 
-                                  labels_one_hot_array[i])
+                self.train_single(data_array[i], labels_one_hot_array[i])
             if intermediate_results:
-                intermediate_weights.append((self.wih.copy(), 
-                                             self.who.copy()))
+                intermediate_weights.append((self.weights_in_hidden.copy(), 
+                                             self.weights_hidden_output.copy()))
         return intermediate_weights        
-        
+
+ # Code for testing       
     
     def run(self, input_vector):
         # input_vector can be tuple, list or ndarray
         input_vector = np.array(input_vector, ndmin=2).T
         # 1st layer
-        output_vector = np.dot(self.wih, input_vector)
-        output_vector = self.a.activation_function(output_vector)
+        output_vector = np.dot(self.weights_in_hidden, input_vector)
+        output_vector = Activation.reLU(output_vector)
         # 2nd layer
-        output_vector = np.dot(self.who, output_vector)
-        output_vector = self.a.activation_function(output_vector)
+        output_vector = np.dot(self.weights_hidden_output, output_vector)
+        output_vector = Activation.sigmoid(output_vector)
     
         return output_vector
             
@@ -115,12 +108,13 @@ class NeuralNetwork:
         return cm    
     def precision(self, label, confusion_matrix):
         col = confusion_matrix[:, label]
-        return confusion_matrix[label, label] / col.sum()
+        calc_value = confusion_matrix[label, label] / col.sum()
+        return calc_value
     
     def recall(self, label, confusion_matrix):
         row = confusion_matrix[label, :]
-        return confusion_matrix[label, label] / row.sum()
-        
+        calc_value = confusion_matrix[label, label] / row.sum()
+        return calc_value
     
     def evaluate(self, data, labels):
         corrects, wrongs = 0, 0
