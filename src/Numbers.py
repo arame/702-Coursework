@@ -17,6 +17,7 @@ image_pixels = image_size * image_size
 f = Files("pickled_mnist.pkl")
 with open(os.path.join(".", f.file_path), "br") as fh:
     data = pickle.load(fh)
+
 train_imgs = data[0]
 test_imgs = data[1]
 train_labels = data[2]
@@ -42,11 +43,15 @@ test_labels_one_hot[test_labels_one_hot==1] = 0.99
 #    plt.imshow(img, cmap="Greys")
 #    plt.show()
 
+#**************************************************
+# To get the model to work, adjust these values
 epochs = 10
+learning_rate = 0.001
+#**************************************************
 ANN = NeuralNetwork(no_of_in_nodes = image_pixels, 
                                no_of_out_nodes = 10, 
                                no_of_hidden_nodes = 100,
-                               learning_rate = 0.01)
+                               learning_rate = learning_rate)
     
     
  

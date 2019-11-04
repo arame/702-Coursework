@@ -55,11 +55,13 @@ class NeuralNetwork:
         output_hidden = Activation.reLU(output_vector1)
         
         output_vector2 = np.dot(self.weights_hidden_output, output_hidden)
-        output_network = Activation.sigmoid(output_vector2)
-        
+        #output_network = Activation.sigmoid(output_vector2)
+        output_network = Activation.reLU(output_vector2)
+
         output_errors = target_vector - output_network
         # update the weights:
-        tmp = output_errors * Derivative.sigmoid(output_network)     
+        #tmp = output_errors * Derivative.sigmoid(output_network)
+        tmp = output_errors * Derivative.reLU(output_network)     
         tmp = self.learning_rate  * np.dot(tmp, output_hidden.T)
         self.weights_hidden_output += tmp
         # calculate hidden errors:
@@ -94,7 +96,8 @@ class NeuralNetwork:
         output_vector = Activation.reLU(output_vector)
         # 2nd layer
         output_vector = np.dot(self.weights_hidden_output, output_vector)
-        output_vector = Activation.sigmoid(output_vector)
+        #output_vector = Activation.sigmoid(output_vector)
+        output_vector = Activation.reLU(output_vector)
     
         return output_vector
             
