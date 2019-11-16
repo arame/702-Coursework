@@ -52,16 +52,18 @@ ANN = NeuralNetwork(no_of_in_nodes = image_pixels,
                                no_of_out_nodes = 10, 
                                no_of_hidden_nodes = 100,
                                learning_rate = learning_rate)
-    
-    
- 
+  
+print("---------------------------------------------------------")
+print("Training")
+print("---------------------------------------------------------") 
 weights = ANN.train(train_imgs, 
                     train_labels_one_hot, 
                     epochs=epochs, 
                     intermediate_results=True)
 
+
 print("---------------------------------------------------------")
-print("Training")
+print("Testing")
 print("---------------------------------------------------------")
 for i in range(epochs):  
     ANN.weights_in_hidden = weights[i][0]
@@ -74,9 +76,6 @@ for i in range(epochs):
     corrects, wrongs = ANN.evaluate(test_imgs, test_labels)
     print("accuracy: test", corrects / ( corrects + wrongs))
 
-print("---------------------------------------------------------")
-print("Testing")
-print("---------------------------------------------------------")
 print("Confusion Matrix:")
 cm = ANN.confusion_matrix(train_imgs, train_labels)
 print(cm)
