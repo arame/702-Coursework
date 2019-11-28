@@ -1,4 +1,4 @@
-
+import numpy as np
 
 class Derivative:
     @staticmethod
@@ -7,9 +7,5 @@ class Derivative:
     
     @staticmethod
     def reLU(arr):
-        for i in range(len(arr)):
-            if arr[i] <= 0:
-                arr[i] = 0
-            else:
-                arr[i] = 1
-        return arr
+        arr1 = np.where(arr <= 0, 0, 1)
+        return arr1
