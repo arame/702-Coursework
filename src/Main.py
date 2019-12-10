@@ -7,10 +7,9 @@ from scipy.stats import truncnorm
 from files import Files
 from local_time import LocalTime
 from neural_network import NeuralNetwork
-t = LocalTime()
-print("*********************************************************")
-print("** Start at ", t.localtime)
-print("*********************************************************")
+print("*"*100)
+print("** Start at ", LocalTime.get())
+print("*"*100)
 image_size = 28 # width and height
 no_of_different_labels = 10 #  i.e. 0, 1, 2, 3, ..., 9
 image_pixels = image_size * image_size
@@ -53,22 +52,21 @@ ANN = NeuralNetwork(no_of_in_nodes = image_pixels,
                                no_of_hidden_nodes = 100,
                                learning_rate = learning_rate)
   
-print("---------------------------------------------------------")
+print("-"*100)
 print("Training")
-print("---------------------------------------------------------") 
+print("-"*100) 
 weights = ANN.train(train_imgs, 
                     train_labels_one_hot, 
                     epochs=epochs, 
                     intermediate_results=True)
 
-
-print("---------------------------------------------------------")
+print("-"*100)
 print("Testing")
-print("---------------------------------------------------------")
+print("-"*100)
 for i in range(epochs):  
     ANN.weights_in_hidden = weights[i][0]
     ANN.weights_hidden_output = weights[i][1] 
-    print("---------------------------------------------------------")
+    print("-"*100)
     print("epoch: ", i + 1)
   
     corrects, wrongs = ANN.evaluate(train_imgs, train_labels)
@@ -82,8 +80,7 @@ print(cm)
 for i in range(epochs):
     print("digit: ", i, "precision: ", ANN.precision(i, cm), "recall: ", ANN.recall(i, cm))
     
-print("---------------------------------------------------------")
-t = LocalTime()
-print("*********************************************************")
-print("** End at ", t.localtime)
-print("*********************************************************")
+print("-"*100)
+print("*"*100)
+print("** End at ", LocalTime.get())
+print("*"*100)
